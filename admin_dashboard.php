@@ -70,7 +70,10 @@ try {
         <button type="submit" class="nav-button">Supervisors</button>
       </form>
 
-      <button onclick="location.href='admin_messages.php'">Messages</button>
+      <button onclick="location.href='admin_messages.php'" class="nav-button">Messages</button>
+      
+      <!-- ✅ Log out button added -->
+      <button onclick="location.href='logout.php'" class="nav-button">Log out</button>
     </nav>
   </aside>
 

@@ -120,6 +120,8 @@ foreach ($messages as $msg) {
   <img src="logo.jpeg" alt="Logo" class="logo">
   <button onclick="location.href='admin_dashboard.php'">Dashboard</button>
   <button onclick="location.href='interns_dashboard.php'">Internship field</button>
+  <button onclick="location.href='admin_dashboard.php'">Applications</button>
+  <button onclick="location.href='interns_dashboard.php'">Interns</button>
   <button onclick="location.href='supervisor_dashboard.php'">Supervisors</button>
   <button class="active">Messages</button>
   <button onclick="location.href='logout.php'">Log out</button>
