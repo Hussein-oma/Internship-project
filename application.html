@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Out West Internship Application Form</title>
+  <link rel="stylesheet" href="application.css" />
+</head>
+<body>
+  <div class="form-container">
+    <img src="logo.jpeg" alt="Out West Logo" class="logo" />
+    <h2>Out West Internship Application Form</h2>
+    <p>Please fill in the internship application form below. Thank you!</p>
+
+    <!-- Back to Website Button -->
+    <p style="margin-bottom: 20px;">
+      <a href="website.php" style="padding: 10px 18px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">← Back to Website</a>
+    </p>
+
+    <form action="submit_application.php" method="POST">
+      <fieldset>
+        <legend>Personal Information</legend>
+        <label>Full Name: <input type="text" name="fullname" required /></label>
+        <label>Date of Birth: <input type="date" name="dob" required /></label>
+        <label>Phone Number: <input type="text" name="phone" required /></label>
+        <label>Email Address: <input type="email" name="email" required /></label>
+        <label>Gender:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="Male" required /> Male</label>
+          <label><input type="radio" name="gender" value="Female" /> Female</label>
+        </div>
+        <label>Nationality:
+          <select name="nationality" required>
+            <option value="" disabled selected>Select your country</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Tanzania">Tanzania</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Ethiopia">Ethiopia</option>
+            <option value="South Africa">South Africa</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="India">India</option>
+            <option value="China">China</option>
+            <option value="Germany">Germany</option>
+            <option value="Canada">Canada</option>
+            <option value="Australia">Australia</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Education Background</legend>
+        <label>Institution Name: <input type="text" name="institution" required /></label>
+        <label>Course of Study: <input type="text" name="course" required /></label>
+        <label>Level of Study:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="level" value="Diploma" required /> Diploma</label>
+          <label><input type="radio" name="level" value="Degree" /> Degree</label>
+          <label><input type="radio" name="level" value="Masters" /> Master's</label>
+          <label><input type="radio" name="level" value="Other" /> Other</label>
+        </div>
+
+        <label>Year of Study:
+          <select name="year" required>
+            <option value="" disabled selected>Select year</option>
+            <option value="First">First</option>
+            <option value="Second">Second</option>
+            <option value="Third">Third</option>
+            <option value="Fourth">Fourth</option>
+            <option value="Fifth">Fifth</option>
+            <option value="Graduated">Graduated</option>
+          </select>
+        </label>
+
+        <label>Expected Graduation Year:
+          <select name="graduation" required>
+            <option value="" disabled selected>Select year</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>
+            <option value="2032">2032</option>
+            <option value="2033">2033</option>
+            <option value="2034">2034</option>
+            <option value="2035">2035</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Internship Details</legend>
+        <label>Preferred Internship Department:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="department[]" value="Software Development" /> Software Development</label>
+          <label><input type="checkbox" name="department[]" value="Networking" /> Networking</label>
+          <label><input type="checkbox" name="department[]" value="System Admin" /> System Administration</label>
+          <label><input type="checkbox" name="department[]" value="Data Analysis" /> Data Analysis</label>
+          <label><input type="checkbox" name="department[]" value="UI/UX" /> UI/UX Design</label>
+          <label><input type="checkbox" name="department[]" value="Other" /> Other: <input type="text" name="other_department" /></label>
+        </div>
+
+        <label>Preferred Internship Duration:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="duration" value="1" required /> 1 month</label>
+          <label><input type="radio" name="duration" value="2" /> 2 months</label>
+          <label><input type="radio" name="duration" value="3" /> 3 months</label>
+          <label><input type="radio" name="duration" value="other" /> Other:</label>
+          <input type="text" name="duration_other" placeholder="Specify duration">
+        </div>
+
+        <label>Available Start Date: <input type="date" name="startdate" required /></label>
+
+        <label>Do you require accommodation?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="accommodation" value="Yes" required /> Yes</label>
+          <label><input type="radio" name="accommodation" value="No" /> No</label>
+        </div>
+
+        <label>Is the intern paid?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="paid" value="Yes" required /> Yes</label>
+          <label><input type="radio" name="paid" value="No" /> No</label>
+        </div>
+
+        <label>If yes, specify the amount (monthly): <input type="number" name="amount" /></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Technical Skills</legend>
+        <textarea name="skills" placeholder="List programming languages, tools, platforms, etc." required></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>Previous Internship / Work Experience (if any)</legend>
+        <label>Company/Organization: <input type="text" name="company" /></label>
+        <label>Position/Role: <input type="text" name="role" /></label>
+        <label>Duration: <input type="text" name="exp_duration" /></label>
+        <label>Responsibilities:</label>
+        <textarea name="responsibilities"></textarea>
+      </fieldset>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

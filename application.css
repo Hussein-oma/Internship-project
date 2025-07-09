@@ -1,0 +1,120 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f3f4f6;
+  margin: 0;
+  padding: 20px;
+}
+
+.form-container {
+  max-width: 700px;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 10px auto;
+  max-height: 70px;
+}
+
+
+h2 {
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+p {
+  text-align: center;
+  color: #4b5563;
+  margin-bottom: 25px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset {
+  border: none;
+  margin-bottom: 25px;
+  padding: 0;
+}
+
+legend {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: border 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.checkbox-group label,
+.checkbox-group-inline label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: normal;
+}
+
+.checkbox-group-inline {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+button[type="submit"] {
+  padding: 12px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #1d4ed8;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.radio-group label {
+  font-weight: normal;
+}
