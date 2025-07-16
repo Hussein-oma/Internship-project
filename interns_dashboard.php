@@ -83,6 +83,7 @@ $supervisors = $conn->query("SELECT id, name FROM users WHERE role = 'supervisor
     </button>
     <button onclick="location.href='supervisor_dashboard.php'">Supervisors</button>
     <button onclick="location.href='admin_messages.php'">Messages</button>
+    <button onclick="location.href='admin_reports.php'">Reports</button>
     <button class="logout" onclick="location.href='logout.php'">Log out</button>
 </div>
 

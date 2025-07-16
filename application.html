@@ -17,7 +17,7 @@
       <a href="website.php" style="padding: 10px 18px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;">← Back to Website</a>
     </p>
 
-    <form action="submit_application.php" method="POST">
+    <form action="submit_application.php" method="POST" enctype="multipart/form-data">
       <fieldset>
         <legend>Personal Information</legend>
         <label>Full Name: <input type="text" name="fullname" required /></label>
@@ -143,6 +143,14 @@
         <label>Duration: <input type="text" name="exp_duration" /></label>
         <label>Responsibilities:</label>
         <textarea name="responsibilities"></textarea>
+      </fieldset>
+
+      <!-- CV Upload -->
+      <fieldset>
+        <legend>Upload Your CV</legend>
+        <label>Upload CV (PDF, DOC, DOCX):
+          <input type="file" name="cv" accept=".pdf,.doc,.docx" required />
+        </label>
       </fieldset>
 
       <button type="submit">Submit</button>

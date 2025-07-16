@@ -68,6 +68,7 @@ $admin = $admin_result->fetch_assoc();
         <button type="submit" class="nav-button">Supervisors</button>
     </form>
     <button onclick="location.href='admin_messages.php'">Messages</button>
+    <button onclick="location.href='admin_reports.php'">Reports</button>
     <button onclick="location.href='logout.php'">Log out</button>
   </div>
 

@@ -124,6 +124,7 @@ foreach ($messages as $msg) {
   <button onclick="location.href='interns_dashboard.php'">Interns</button>
   <button onclick="location.href='supervisor_dashboard.php'">Supervisors</button>
   <button class="active">Messages</button>
+  <button onclick="location.href='admin_reports.php'">Report</button>
   <button onclick="location.href='logout.php'">Log out</button>
 </div>
 

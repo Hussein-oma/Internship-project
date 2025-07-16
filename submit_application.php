@@ -1,7 +1,6 @@
 <?php
 require_once 'config.php';
 
-// Check if the form is submitted via POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize inputs
     $fullname     = trim($_POST['fullname'] ?? '');
@@ -34,46 +33,71 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $exp_duration     = trim($_POST['exp_duration'] ?? '');
     $responsibilities = trim($_POST['responsibilities'] ?? '');
 
+    // === CV Upload Handling ===
+    $cv_file_path = null;
+
+    if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'uploads/cv/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        $ext = pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION);
+        $cv_file_name = uniqid('cv_', true) . '.' . $ext;
+        $cv_target_path = $upload_dir . $cv_file_name;
+
+        if (move_uploaded_file($_FILES['cv']['tmp_name'], $cv_target_path)) {
+            $cv_file_path = $cv_target_path;
+        } else {
+            echo "<p style='color: red;'>❌ Failed to upload CV. Please try again.</p>";
+            exit;
+        }
+    } else {
+        echo "<p style='color: red;'>❌ CV upload is required.</p>";
+        exit;
+    }
+
     try {
         $stmt = $pdo->prepare("INSERT INTO internship_applications (
             fullname, dob, phone, email, gender, nationality,
             institution, course, level, year, graduation,
             department, other_department, duration, duration_other, startdate,
             accommodation, paid, amount,
-            skills, company, role, exp_duration, responsibilities
+            skills, company, role, exp_duration, responsibilities, cv_file
         ) VALUES (
             :fullname, :dob, :phone, :email, :gender, :nationality,
             :institution, :course, :level, :year, :graduation,
             :department, :other_department, :duration, :duration_other, :startdate,
             :accommodation, :paid, :amount,
-            :skills, :company, :role, :exp_duration, :responsibilities
+            :skills, :company, :role, :exp_duration, :responsibilities, :cv_file
         )");
 
         $stmt->execute([
-            ':fullname'        => $fullname,
-            ':dob'             => $dob,
-            ':phone'           => $phone,
-            ':email'           => $email,
-            ':gender'          => $gender,
-            ':nationality'     => $nationality,
-            ':institution'     => $institution,
-            ':course'          => $course,
-            ':level'           => $level,
-            ':year'            => $year,
-            ':graduation'      => $graduation,
-            ':department'      => $department,
-            ':other_department'=> $other_department,
-            ':duration'        => $duration,
-            ':duration_other'  => $duration_other,
-            ':startdate'       => $startdate,
-            ':accommodation'   => $accommodation,
-            ':paid'            => $paid,
-            ':amount'          => $amount,
-            ':skills'          => $skills,
-            ':company'         => $company,
-            ':role'            => $role,
-            ':exp_duration'    => $exp_duration,
-            ':responsibilities'=> $responsibilities
+            ':fullname'         => $fullname,
+            ':dob'              => $dob,
+            ':phone'            => $phone,
+            ':email'            => $email,
+            ':gender'           => $gender,
+            ':nationality'      => $nationality,
+            ':institution'      => $institution,
+            ':course'           => $course,
+            ':level'            => $level,
+            ':year'             => $year,
+            ':graduation'       => $graduation,
+            ':department'       => $department,
+            ':other_department' => $other_department,
+            ':duration'         => $duration,
+            ':duration_other'   => $duration_other,
+            ':startdate'        => $startdate,
+            ':accommodation'    => $accommodation,
+            ':paid'             => $paid,
+            ':amount'           => $amount,
+            ':skills'           => $skills,
+            ':company'          => $company,
+            ':role'             => $role,
+            ':exp_duration'     => $exp_duration,
+            ':responsibilities' => $responsibilities,
+            ':cv_file'          => $cv_file_path
         ]);
 
         echo "<p style='color: green; font-size: 18px;'>✅ Application submitted successfully!<br>Avail yourself for interview on 05/09/2025</p>";

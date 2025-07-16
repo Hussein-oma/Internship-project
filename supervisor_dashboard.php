@@ -66,6 +66,7 @@ foreach ($supervisors as $sup) {
       <?php endif; ?>
     </button>
     <button onclick="location.href='admin_messages.php'">Messages</button>
+    <button onclick="location.href='admin_reports.php'">Reports</button>
     <button class="logout-btn" onclick="location.href='logout.php'">Log out</button>
   </div>
 

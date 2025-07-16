@@ -33,16 +33,6 @@ try {
   <meta charset="UTF-8" />
   <title>Out-west Admin Dashboard</title>
   <link rel="stylesheet" href="admin_dashboard.css">
-  <style>
-    .badge {
-      background: red;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 12px;
-      font-size: 12px;
-      margin-left: 6px;
-    }
-  </style>
 </head>
 <body>
 <div class="container">
@@ -71,9 +61,8 @@ try {
       </form>
 
       <button onclick="location.href='admin_messages.php'" class="nav-button">Messages</button>
-      
-      <!-- ✅ Log out button added -->
-      <button onclick="location.href='logout.php'" class="nav-button">Log out</button>
+      <button onclick="location.href='admin_reports.php'" class="nav-button">Reports</button>
+      <button onclick="location.href='logout.php'" class="nav-button logout-btn">Log out</button>
     </nav>
   </aside>
 
@@ -121,6 +110,15 @@ try {
           <p><strong>Experience Duration:</strong> <?= $app['exp_duration'] ?></p>
           <p><strong>Responsibilities:</strong> <?= $app['responsibilities'] ?></p>
           <p><strong>Status:</strong> <?= ucfirst(htmlspecialchars($app['status'])) ?></p>
+
+          <?php if (!empty($app['cv_file']) && file_exists($app['cv_file'])): ?>
+            <p><strong>CV:</strong>
+              <a href="<?= htmlspecialchars($app['cv_file']) ?>" target="_blank">View CV</a>
+            </p>
+          <?php else: ?>
+            <p><strong>CV:</strong> Not uploaded</p>
+          <?php endif; ?>
+
           <div class="action-buttons">
             <form action="update_status.php" method="post">
               <input type="hidden" name="id" value="<?= $app['id'] ?>">
