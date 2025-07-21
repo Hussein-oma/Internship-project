@@ -17,13 +17,35 @@ if (isset($_GET['email']) && !empty($_GET['email'])) {
 <head>
   <meta charset="UTF-8">
   <title>Application Status</title>
-  <link rel="stylesheet" href="status.css">
+  <link rel="stylesheet" href="status1.css">
   <style>
     .error-message {
       color: red;
       text-align: center;
       margin: 10px 0;
       font-weight: bold;
+    }
+
+    .back-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #009fd4; /* Mountain Blue */
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+      margin: 10px auto;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .back-btn:hover {
+      background-color: #007ab0;
+    }
+
+    .button-wrapper {
+      text-align: center;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -45,6 +67,11 @@ if (isset($_GET['email']) && !empty($_GET['email'])) {
       />
       <button type="submit">Search</button>
     </form>
+
+    <!-- Back to Website button -->
+    <div class="button-wrapper">
+      <a href="website.php" class="back-btn">← Back to Website</a>
+    </div>
 
     <?php if ($searched && empty($searchResults)): ?>
       <div class="error-message">Invalid email or no record found.</div>

@@ -7,38 +7,50 @@ body {
   margin: 0;
   display: flex;
   height: 100vh;
+  background-color: #f9f9f9;
 }
 
 /* Sidebar */
 .sidebar {
   width: 140px;
-  background-color: #f0f0f0;
-  border-right: 1px solid #333;
+  background-color: #95cb48;
+  border-right: 1px solid #95cb48;
   padding-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 15px; /* Added font size for sidebar text */
 }
 
 .sidebar button {
   width: 100px;
   margin: 10px 0;
   padding: 5px;
-  border: 1px solid #444;
-  background-color: #ddd;
+  border: none;
+  background-color: transparent;
+  color: white;
   cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 4px;
+}
+
+.sidebar button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar button.active {
-  background-color: #999;
+  background-color: #dc1511;
   color: white;
+  font-weight: bold;
 }
+
 .logo {
   display: block;
   margin: 0 auto 9px auto;
   max-height: 65px;
   margin-top: 10px;
 }
+
 .logout-btn {
   margin-top: auto;
   margin-bottom: 20px;
@@ -48,15 +60,17 @@ body {
 .main-content {
   flex-grow: 1;
   padding: 20px;
+  background-color: #ffffff;
   position: relative;
 }
 
 .header {
   text-align: center;
-  background-color: #e4e4e4;
+  background-color: #95cb48;
+  color: white;
   padding: 10px;
   font-size: 20px;
-  border: 1px solid #aaa;
+  border-radius: 6px;
   width: fit-content;
   margin: 0 auto;
 }
@@ -71,23 +85,33 @@ body {
 
 .sub-header {
   font-size: 16px;
+  color: #009fd4;
+  font-weight: bold;
 }
 
 .add-btn {
   padding: 5px 10px;
-  background-color: #ddd;
-  border: 1px solid #000;
+  background-color: #95cb48;
+  border: 1px solid #6ea636;
+  color: white;
   cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+}
+
+.add-btn:hover {
+  background-color: #7fbd3a;
 }
 
 .field-table {
   margin: 0 auto;
   border-collapse: collapse;
   width: 60%;
+  background-color: #fdfdfd;
 }
 
 .field-table td {
-  border: 1px solid #000;
+  border: 1px solid #009fd4;
   padding: 10px;
 }
 
@@ -97,9 +121,36 @@ body {
   gap: 10px;
 }
 
+.field-table .actions .edit-btn {
+  background-color: #009fd4;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.field-table .actions .edit-btn:hover {
+  background-color: #007bb3;
+}
+
+.field-table .actions .delete-btn {
+  background-color: #dc1511;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.field-table .actions .delete-btn:hover {
+  background-color: #b5120e;
+}
+
 .bottom-right {
   position: absolute;
   bottom: 10px;
   right: 10px;
   font-size: 12px;
+  color: #777;
 }

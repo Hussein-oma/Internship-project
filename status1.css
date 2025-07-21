@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  border: 2px solid #009fd4; /* Mountain Blue border */
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 159, 212, 0.2); /* Soft blue shadow */
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #009fd4; /* Mountain Blue border */
+}
+
+h2 {
+  text-align: center;
+  background-color: #95cb48; /* Green */
+  color: white;
+  padding: 10px;
+  margin: 20px 0;
+  border-radius: 5px;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.search-bar input {
+  padding: 5px 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-bar button {
+  padding: 6px 15px;
+  background-color: #dc1511; /* Gear Red */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-bar button:hover {
+  background-color: #a90f0c; /* Darker red on hover */
+}
+
+/* Results table */
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.result-table th {
+  background-color: #009fd4; /* Mountain Blue header */
+  color: white;
+  padding: 10px;
+}
+
+.result-table th, .result-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.result-table tr:nth-child(even) {
+  background-color: #f1f9fc; /* Light blue row striping */
+}
+
+.result-table tr:hover {
+  background-color: #e2f3fb; /* Row hover effect */
+}
+
+.result-table a {
+  color: #009fd4; /* Mountain Blue links */
+  text-decoration: underline;
+  font-size: 14px;
+}

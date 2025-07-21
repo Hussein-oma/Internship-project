@@ -31,8 +31,8 @@ try {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Out-west Admin Dashboard</title>
-  <link rel="stylesheet" href="admin_dashboard.css">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin_dashboard1.css">
 </head>
 <body>
 <div class="container">
@@ -68,7 +68,7 @@ try {
 
   <main class="main-content">
     <header class="dashboard-header">
-      <h1>Out-west Internship Admin Dashboard</h1>
+      <h1>Internship Admin Dashboard</h1>
 
       <div class="dropdown">
         <form method="GET" id="statusForm">

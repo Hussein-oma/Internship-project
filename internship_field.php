@@ -21,8 +21,8 @@ $admin = $admin_result->fetch_assoc();
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Out-west Internship Admin Dashboard</title>
-  <link rel="stylesheet" href="internship_field.css">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="internship_field1.css">
   <style>
     .application-dates-box {
       margin-bottom: 25px;
@@ -73,7 +73,7 @@ $admin = $admin_result->fetch_assoc();
   </div>
 
   <div class="main-content">
-    <div class="header">Out-west Internship Admin dashboard</div>
+    <div class="header">Internship Admin dashboard</div>
 
     <!-- ✅ Admin Profile Section -->
     <div class="application-dates-box">
