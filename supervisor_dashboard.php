@@ -34,7 +34,7 @@ foreach ($supervisors as $sup) {
 <head>
   <meta charset="UTF-8">
   <title>Supervisor Dashboard</title>
-  <link rel="stylesheet" href="supervisor.css">
+  <link rel="stylesheet" href="supervisor1.css">
   <style>
     .badge {
       background-color: red;

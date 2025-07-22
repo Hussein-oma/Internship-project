@@ -20,19 +20,21 @@ body {
   margin: 80px auto;
   padding: 30px;
   background-color: white;
-  border: 1px solid #333;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border: 1px solid #009fd4; /* Blue border */
+  box-shadow: 0 0 10px rgba(0, 159, 212, 0.2);
 }
 
 h2 {
   text-align: center;
   margin-bottom: 20px;
+  color: #009fd4; /* Blue heading */
 }
 
 label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
+  color: #333;
 }
 
 input[type="email"],
@@ -41,24 +43,31 @@ input[type="password"] {
   padding: 8px;
   margin-top: 5px;
   background-color: #e0e0e0;
-  border: none;
+  border: 2px solid #95cb48; /* Green border */
 }
 
 button[type="submit"] {
   margin-top: 15px;
-  background-color: #ddd;
+  background-color: #009fd4; /* Blue */
+  color: white;
   padding: 8px 16px;
   cursor: pointer;
   border: none;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #007bb0;
 }
 
 .register-link {
   display: inline-block;
   margin-left: 10px;
-  background-color: #e0e0e0;
+  background-color: #95cb48; /* Green */
+  color: white;
   padding: 4px 12px;
   text-decoration: none;
-  color: black;
+  border-radius: 3px;
 }
 
 .message {
@@ -66,9 +75,11 @@ button[type="submit"] {
   padding: 10px;
   margin-bottom: 10px;
   font-size: 14px;
+  background-color: #95cb48;
+  color: white;
 }
 
 .error {
-  background-color: #ffcdd2;
-  color: #c62828;
+  background-color: #dc1511; /* Red */
+  color: white;
 }

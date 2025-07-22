@@ -13,7 +13,7 @@ $admin_id = $_SESSION['user_id'];
 $supervisors = $pdo->query("SELECT id, name FROM users WHERE role = 'supervisor'")->fetchAll(PDO::FETCH_ASSOC);
 $interns = $pdo->query("SELECT id, name FROM users WHERE role = 'intern'")->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle new message or notification to multiple recipients
+// Handle sending messages and replies
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['message_text'], $_POST['recipients'], $_POST['type']) && is_array($_POST['recipients'])) {
         $message = trim($_POST['message_text']);
@@ -42,22 +42,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['reply_text'], $_POST['reply_to_id'], $_POST['reply_to_role'], $_POST['group_id'], $_POST['reply_to_message_id'])) {
         $reply_text = trim($_POST['reply_text']);
-        $reply_to_id = $_POST['reply_to_id'];
-        $reply_to_role = $_POST['reply_to_role'];
-        $group_id = $_POST['group_id'];
-        $reply_to_message_id = $_POST['reply_to_message_id'];
-
         if (!empty($reply_text)) {
             $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_id, recipient_role, type, group_id, reply_to_message_id)
                                    VALUES (?, NOW(), ?, 'admin', ?, ?, 'reply', ?, ?)");
-            $stmt->execute([$reply_text, $admin_id, $reply_to_id, $reply_to_role, $group_id, $reply_to_message_id]);
+            $stmt->execute([
+                $reply_text,
+                $admin_id,
+                $_POST['reply_to_id'],
+                $_POST['reply_to_role'],
+                $_POST['group_id'],
+                $_POST['reply_to_message_id']
+            ]);
         }
         header("Location: admin_messages.php");
         exit();
     }
 }
 
-// Only show messages where admin is sender, recipient, or sending to a group
+// Fetch messages
 $stmt = $pdo->prepare("
     SELECT m.*, sender.name AS sender_name
     FROM messages m
@@ -71,10 +73,9 @@ $stmt = $pdo->prepare("
 $stmt->execute(['admin_id' => $admin_id]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Group messages by parent and replies
+// Group messages
 $parent_messages = [];
 $replies_map = [];
-
 foreach ($messages as $msg) {
     if ($msg['reply_to_message_id']) {
         $replies_map[$msg['reply_to_message_id']][] = $msg;
@@ -90,48 +91,157 @@ foreach ($messages as $msg) {
   <meta charset="UTF-8">
   <title>Admin Messages</title>
   <style>
-    body { margin: 0; display: flex; font-family: Arial, sans-serif; }
+    body {
+      margin: 0;
+      display: flex;
+      font-family: Arial, sans-serif;
+    }
+
     .sidebar {
-      width: 140px; background-color: #f0f0f0; border-right: 1px solid #333;
-      display: flex; flex-direction: column; align-items: center; padding-top: 30px;
+      width: 140px;
+      background-color: #95cb48;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 30px;
     }
+
     .sidebar button {
-      width: 100px; margin: 10px 0; padding: 6px;
-      border: 1px solid #444; background-color: #ddd; cursor: pointer;
+      width: 100px;
+      margin: 8px 0;
+      padding: 8px;
+      border: 1px solid #444;
+      background-color: transparent;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
     }
-    .sidebar button.active { background-color: #999; color: white; }
-    .sidebar img.logo { max-height: 65px; margin-bottom: 10px; }
-    .main { flex-grow: 1; padding: 20px; }
-    .card { border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
-    .message-card { background: #e8f0ff; }
-    .notification-card { background: #fffbe5; }
+
+    .sidebar button.active {
+      background-color: #dc1511;
+      color: white;
+      font-weight: bold;
+    }
+
+    .sidebar img.logo {
+      max-height: 65px;
+      margin-bottom: 20px;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .send-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .send-form textarea {
+      width: 300px;
+      height: 60px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .send-form select, .send-form button {
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    .send-form button {
+      background-color: #95cb48;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .send-form button:hover {
+      background-color: #7da640;
+    }
+
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #fff;
+    }
+
+    .message-card {
+      background-color: #e8f0ff;
+    }
+
+    .notification-card {
+      background-color: #fffbe5;
+    }
+
     .reply-card {
-      background: #f0f0ff; margin-left: 30px; border-left: 4px solid #007bff;
+      background: #f0f0ff;
+      margin-left: 30px;
+      border-left: 4px solid #007bff;
     }
-    .reply-form textarea { width: 100%; height: 50px; margin-top: 8px; resize: none; }
-    .reply-form button { margin-top: 5px; padding: 5px 10px; background-color: #444; color: white; border: none; }
-    .send-form { display: flex; gap: 10px; margin-bottom: 30px; }
-    .send-form textarea { width: 300px; height: 60px; padding: 6px; }
-    .send-form select, .send-form button { padding: 6px; }
+
+    .reply-form textarea {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    .reply-form button {
+      margin-top: 5px;
+      padding: 6px 12px;
+      background-color: #95cb48;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .reply-form button:hover {
+      background-color: #7da640;
+    }
   </style>
 </head>
 <body>
+
 <div class="sidebar">
   <img src="logo.jpeg" alt="Logo" class="logo">
   <button onclick="location.href='admin_dashboard.php'">Dashboard</button>
-  <button onclick="location.href='interns_dashboard.php'">Internship field</button>
+  <button onclick="location.href='interns_dashboard.php'">Internship Field</button>
   <button onclick="location.href='admin_dashboard.php'">Applications</button>
   <button onclick="location.href='interns_dashboard.php'">Interns</button>
   <button onclick="location.href='supervisor_dashboard.php'">Supervisors</button>
   <button class="active">Messages</button>
-  <button onclick="location.href='admin_reports.php'">Report</button>
-  <button onclick="location.href='logout.php'">Log out</button>
+  <button onclick="location.href='admin_reports.php'">Reports</button>
+  <button onclick="location.href='logout.php'">Logout</button>
 </div>
 
 <div class="main">
   <h2>Send Message</h2>
+
   <form class="send-form" method="POST">
     <textarea name="message_text" placeholder="Type a message..." required></textarea>
+
     <select name="recipients[]" multiple required size="6">
       <option value="all_interns">All Interns</option>
       <option value="all_supervisors">All Supervisors</option>
@@ -147,11 +257,13 @@ foreach ($messages as $msg) {
         <?php endforeach; ?>
       </optgroup>
     </select>
+
     <select name="type" required>
       <option value="message">Message</option>
       <option value="notification">Notification</option>
     </select>
-    <button type="submit">Send to Selected Users</button>
+
+    <button type="submit">Send</button>
   </form>
 
   <?php foreach ($parent_messages as $msg):
@@ -159,10 +271,7 @@ foreach ($messages as $msg) {
     $replies = $replies_map[$msg['id']] ?? [];
     $already_replied = false;
     foreach ($replies as $r) {
-        if ($r['user_id'] == $admin_id) {
-            $already_replied = true;
-            break;
-        }
+        if ($r['user_id'] == $admin_id) $already_replied = true;
     }
   ?>
     <div class="card <?= $class ?>">
@@ -170,7 +279,7 @@ foreach ($messages as $msg) {
       <small>
         <?= $msg['type'] === 'notification' ? '🔔 Notification' : '💬 Message' ?>
         | From: <?= ucfirst($msg['user_role']) ?> - <?= htmlspecialchars($msg['sender_name'] ?? 'Unknown') ?>
-        | <?= $msg['created_at'] ?> | ID: <?= $msg['id'] ?>
+        | <?= $msg['created_at'] ?>
       </small>
 
       <?php foreach ($replies as $reply): ?>
@@ -193,5 +302,6 @@ foreach ($messages as $msg) {
     </div>
   <?php endforeach; ?>
 </div>
+
 </body>
 </html>

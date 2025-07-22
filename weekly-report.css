@@ -6,17 +6,20 @@ body {
 
 .sidebar {
   width: 140px;
-  background: #f5f5f5;
+  background: #95cb48; /* Green background */
   height: 100vh;
   padding: 20px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
 
 .sidebar img {
   max-width: 80px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .sidebar button {
@@ -25,18 +28,34 @@ body {
   width: 100%;
   border: none;
   cursor: pointer;
-  background-color: #ddd;
+  background-color: transparent;
   border-radius: 4px;
+  color: white; /* White text */
+  font-weight: bold;
 }
 
 .sidebar .active {
-  background-color: #6a5956;
+  background-color: red; /* Red active button */
   color: white;
 }
 
 .main {
+  margin-left: 140px; /* Push content to the right of fixed sidebar */
   flex: 1;
   padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  background-color: #95cb48; /* Matching green */
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 20px;
+  border: 1px solid #7faa3a;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 table {
@@ -53,11 +72,10 @@ th, td {
 
 th:first-child,
 td:first-child {
-  width: 80px; /* or use 'min-width' if you want more flexibility */
+  width: 80px;
   text-align: center;
   white-space: nowrap;
 }
-
 
 textarea {
   width: 100%;
@@ -81,11 +99,13 @@ input[type="date"] {
   padding: 5px;
 }
 
-button[type="submit"] {
+button[type="submit"],
+button[type="button"] {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: #444;
+  background-color: #95cb48; /* Matching green */
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 4px;
 }

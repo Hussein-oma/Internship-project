@@ -35,7 +35,7 @@ $latestReport = $stmt->fetch(PDO::FETCH_ASSOC);
   </div>
 
   <div class="main">
-    <h2>Out-west Internship Dashboard</h2>
+    <h2>Intern Internship Dashboard</h2>
 
     <?php if ($latestReport): ?>
       <h3>Previous Week Report (Week Ending: <?= htmlspecialchars($latestReport['week_ending']) ?>)</h3>

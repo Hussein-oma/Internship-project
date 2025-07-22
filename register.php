@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Create Your Account</title>
-  <link rel="stylesheet" href="register.css">
+  <link rel="stylesheet" href="register1.css">
 </head>
 <body>
   <div class="background-image"></div>

@@ -72,7 +72,7 @@ try {
       <img src="logo.jpeg" alt="Company Logo">
     </div>
 
-    <h1 class="welcome">Welcome to Jkuat internship portal.</h1>
+    <h1 class="welcome">Welcome to outwest internship portal.</h1>
 
     <!-- Slideshow -->
     <div class="slideshow-container">

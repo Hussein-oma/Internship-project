@@ -10,18 +10,15 @@ if (!$supervisor_id || $role !== 'supervisor') {
     exit();
 }
 
-// Fetch supervisor info
 $supervisor_stmt = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
 $supervisor_stmt->execute([$supervisor_id]);
 $supervisor = $supervisor_stmt->fetch();
 
-// Fetch assigned interns
 $stmt = $pdo->prepare("SELECT id, name FROM users WHERE role = 'intern' AND supervisor_id = ?");
 $stmt->execute([$supervisor_id]);
 $interns = $stmt->fetchAll();
 $intern_names = array_column($interns, 'name');
 
-// Count pending submitted tasks
 $pending_tasks_stmt = $pdo->prepare("
   SELECT COUNT(*) FROM tasks 
   WHERE intern_id IN (SELECT id FROM users WHERE supervisor_id = ?) 
@@ -30,7 +27,6 @@ $pending_tasks_stmt = $pdo->prepare("
 $pending_tasks_stmt->execute([$supervisor_id]);
 $pending_tasks_count = $pending_tasks_stmt->fetchColumn();
 
-// Count pending weekly reports
 $pending_reports_stmt = $pdo->prepare("
   SELECT COUNT(*) FROM weekly_reports 
   WHERE intern_id IN (SELECT id FROM users WHERE supervisor_id = ?) 
@@ -39,7 +35,6 @@ $pending_reports_stmt = $pdo->prepare("
 $pending_reports_stmt->execute([$supervisor_id]);
 $pending_reports_count = $pending_reports_stmt->fetchColumn();
 
-// Handle filters
 $filter_intern = $_GET['filter_intern'] ?? null;
 $filter_status = $_GET['filter_status'] ?? null;
 
@@ -88,7 +83,6 @@ $previous_tasks = $task_stmt->fetchAll();
 <head>
   <meta charset="UTF-8">
   <title>Assign Task</title>
-  <link rel="stylesheet" href="weekly-report.css">
   <style>
     body {
       display: flex;
@@ -96,9 +90,8 @@ $previous_tasks = $task_stmt->fetchAll();
       font-family: Arial, sans-serif;
     }
     .sidebar {
-      width: 140px;
-      background-color: #f0f0f0;
-      border-right: 1px solid #333;
+      width: 160px;
+      background-color: #95cb48;
       padding-top: 30px;
       display: flex;
       flex-direction: column;
@@ -106,22 +99,26 @@ $previous_tasks = $task_stmt->fetchAll();
     }
     .sidebar img {
       max-height: 65px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .sidebar button {
       width: 100%;
-      padding: 10px;
+      padding: 10px 20px;
       margin-bottom: 10px;
-      background-color: #ccc;
+      background-color: transparent;
+      color: white;
       border: none;
       text-align: left;
-      padding-left: 20px;
       font-weight: bold;
       cursor: pointer;
       position: relative;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar button:hover {
+      background-color: #7eb537;
     }
     .sidebar .active {
-      background-color: #999;
+      background-color: red;
       color: white;
     }
     .badge {
@@ -131,27 +128,44 @@ $previous_tasks = $task_stmt->fetchAll();
       padding: 2px 7px;
       font-size: 12px;
       position: absolute;
-      right: 10px;
-      top: 9px;
+      right: 15px;
+      top: 10px;
     }
     .main {
       flex: 1;
       padding: 30px;
+      background-color: #f4f4f4;
+    }
+    h2 {
+      color: #95cb48;
     }
     .profile-box, .task-box, .previous-tasks {
       margin-top: 20px;
       padding: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: #f9f9f9;
+      background-color: #fff;
     }
     textarea {
       width: 100%;
       height: 100px;
       margin-bottom: 10px;
     }
-    input[type="file"] {
+    input[type="file"], input[type="date"], select {
       margin: 10px 0;
+      padding: 5px;
+      width: 100%;
+    }
+    button[type="submit"] {
+      background-color: #95cb48;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button[type="submit"]:hover {
+      background-color: #7eb537;
     }
     table {
       width: 100%;
@@ -164,10 +178,14 @@ $previous_tasks = $task_stmt->fetchAll();
       text-align: left;
     }
     th {
-      background-color: #f0f0f0;
+      background-color: #e0e0e0;
     }
     .filter-form {
       margin-top: 20px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
@@ -187,7 +205,7 @@ $previous_tasks = $task_stmt->fetchAll();
         <span class="badge"><?= $pending_tasks_count ?></span>
       <?php endif; ?>
     </button>
-    <button onclick="location.href='supervisor_messages.php'">messages</button>
+    <button onclick="location.href='supervisor_messages.php'">Messages</button>
     <button onclick="location.href='logout.php'">Log out</button>
   </div>
 
@@ -216,12 +234,11 @@ $previous_tasks = $task_stmt->fetchAll();
           <option value="all">All Interns</option>
         </select>
 
-        <div style="float:right; text-align:right;">
-          <label>Date Issued:</label>
-          <input type="date" name="date_issued" required><br>
-          <label>Submit Date:</label>
-          <input type="date" name="submit_date" required>
-        </div>
+        <label>Date Issued:</label>
+        <input type="date" name="date_issued" required>
+
+        <label>Submit Date:</label>
+        <input type="date" name="submit_date" required>
 
         <textarea name="task_description" placeholder="Write task details here..." required></textarea>
         <input type="file" name="attachment">

@@ -9,15 +9,16 @@ body {
   height: 100vh;
 }
 
-/* Sidebar */
+/* === Sidebar === */
 .sidebar {
   width: 140px;
-  background-color: #f0f0f0;
+  background-color: #95cb48; /* Updated green */
   border-right: 1px solid #333;
   padding-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 15px;
 }
 
 .sidebar button {
@@ -25,13 +26,16 @@ body {
   margin: 10px 0;
   padding: 5px;
   border: 1px solid #444;
-  background-color: #ddd;
+  background-color: transparent;
+  color: white;
   cursor: pointer;
+  position: relative;
 }
 
 .sidebar button.active {
-  background-color: #999;
+  background-color: #dc1511;
   color: white;
+  font-weight: bold;
 }
 
 .logo {
@@ -46,25 +50,29 @@ body {
   margin-bottom: 20px;
 }
 
-/* Main content */
+/* === Main Content === */
 .main-content {
   flex-grow: 1;
   padding: 20px;
   position: relative;
 }
 
+/* === Title/Header === */
 h2 {
   text-align: center;
-  background-color: #e0e0e0;
+  background-color: #95cb48; /* Updated to match sidebar */
+  color: white;
   padding: 10px;
   margin-bottom: 20px;
   font-size: 20px;
-  border: 1px solid #aaa;
+  border: none;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  border-radius: 5px;
 }
 
+/* === Add Form / Search === */
 .add-form {
   display: flex;
   gap: 10px;
@@ -72,13 +80,27 @@ h2 {
   justify-content: center;
 }
 
-.add-form input,
-.add-form button {
+.add-form input {
   padding: 5px;
   font-size: 14px;
+  border: 1px solid #ccc;
 }
 
-/* Supervisor Table */
+.add-form button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #95cb48; /* Match sidebar */
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-form button:hover {
+  background-color: #7eaa3c; /* Slightly darker green on hover */
+}
+
+/* === Supervisor Table === */
 .supervisor-table {
   width: 90%;
   margin: 0 auto;

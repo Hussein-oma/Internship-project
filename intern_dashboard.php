@@ -10,7 +10,7 @@ if (!$intern_id || $role !== 'intern') {
     exit();
 }
 
-// Fetch intern profile (now includes email)
+// Fetch intern profile
 $intern_stmt = $pdo->prepare("SELECT name, role, email, supervisor_id FROM users WHERE id = ?");
 $intern_stmt->execute([$intern_id]);
 $intern = $intern_stmt->fetch();
@@ -57,46 +57,49 @@ foreach ($tasks as $t) {
 
     .sidebar {
       width: 140px;
-      background-color: #f0f0f0;
-      border-right: 1px solid #333;
+      background-color: #95cb48;
       padding-top: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
     }
 
     .sidebar img.logo {
-      display: block;
-      margin: 0 auto 15px auto;
       max-height: 65px;
+      margin-bottom: 20px;
     }
 
     .sidebar button {
       width: 100%;
       padding: 10px;
       margin-bottom: 12px;
-      background-color: #ccc;
+      background-color: transparent;
       border: none;
       cursor: pointer;
       text-align: left;
       padding-left: 20px;
       font-weight: bold;
+      color: white;
       transition: background-color 0.3s ease;
       position: relative;
     }
 
     .sidebar button:hover {
-      background-color: #bbb;
+      background-color: rgba(255, 255, 255, 0.2);
     }
 
     .sidebar .active {
-      background-color: #999;
-      color: #fff;
+      background-color: red;
+      color: white;
     }
 
     .badge {
-      background-color: red;
-      color: white;
+      background-color: white;
+      color: red;
       border-radius: 50%;
       padding: 2px 7px;
       font-size: 12px;
@@ -106,8 +109,22 @@ foreach ($tasks as $t) {
     }
 
     .main {
+      margin-left: 140px;
       flex: 1;
       padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      background-color: #95cb48;
+      color: white;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 20px;
+      border-radius: 5px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .profile-box {
@@ -137,7 +154,7 @@ foreach ($tasks as $t) {
     }
 
     .task-card button {
-      background-color: #999;
+      background-color: #95cb48;
       color: #fff;
       padding: 8px 16px;
       border: none;
@@ -146,7 +163,7 @@ foreach ($tasks as $t) {
     }
 
     .task-card button:hover {
-      background-color: #777;
+      background-color: #7fa940;
     }
 
     .submitted {
@@ -175,7 +192,6 @@ foreach ($tasks as $t) {
   <div class="main">
     <h2>Out-west Internship Dashboard</h2>
 
-    <!-- Intern Profile -->
     <div class="profile-box">
       <h3>PROFILE</h3>
       <p><strong>Name:</strong> <?= htmlspecialchars($intern['name']) ?></p>
@@ -184,7 +200,6 @@ foreach ($tasks as $t) {
       <p><strong>Assigned Supervisor:</strong> <?= htmlspecialchars($supervisor_name) ?></p>
     </div>
 
-    <!-- Assigned Tasks -->
     <h3>Assigned Task</h3>
     <?php if (count($tasks) > 0): ?>
       <?php foreach ($tasks as $task): ?>

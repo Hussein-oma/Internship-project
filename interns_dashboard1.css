@@ -13,7 +13,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #f0f0f0;
+  background-color: #95cb48; /* Green background */
   border-right: 1px solid #333;
   padding-top: 30px;
   display: flex;
@@ -26,13 +26,16 @@ body {
   margin: 10px 0;
   padding: 5px;
   border: 1px solid #444;
-  background-color: #ddd;
+  background-color: transparent;
+  color: white;
   cursor: pointer;
+  position: relative;
 }
 
 .sidebar button.active {
-  background-color: #999;
+  background-color: #dc1511; /* Red background for active */
   color: white;
+  font-weight: bold;
 }
 
 .logo {
@@ -49,12 +52,13 @@ body {
 
 /* === Content Area === */
 .content {
-  margin-left: 150px; /* Space for sidebar */
+  margin-left: 150px;
   padding: 30px;
 }
 
 h2 {
-  background-color: #e0e0e0;
+  background-color: #95cb48; /* Match sidebar green */
+  color: white;
   display: inline-block;
   padding: 5px 15px;
   font-size: 20px;
@@ -69,13 +73,19 @@ h2 {
 
 .search-form input {
   padding: 6px;
-  background-color: #e0e0e0;
+  background-color: #95cb48; /* Green background */
+  color: white;
   border: none;
+}
+
+.search-form input::placeholder {
+  color: #f0f0f0; /* Light placeholder text */
 }
 
 .search-form button {
   padding: 6px 12px;
-  background-color: #e0e0e0;
+  background-color: #95cb48; /* Green background */
+  color: white;
   border: none;
   cursor: pointer;
 }
@@ -111,4 +121,17 @@ th, td {
 select {
   padding: 5px;
   font-size: 13px;
+}
+
+/* === Badge for Notification === */
+.badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 12px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  z-index: 999;
 }

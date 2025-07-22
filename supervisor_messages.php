@@ -10,12 +10,10 @@ if (!$supervisor_id || $role !== 'supervisor') {
     exit();
 }
 
-// Fetch assigned interns
 $intern_stmt = $pdo->prepare("SELECT id, name FROM users WHERE role = 'intern' AND supervisor_id = ?");
 $intern_stmt->execute([$supervisor_id]);
 $assigned_interns = $intern_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle message or notification
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['new_message'], $_POST['recipient_id'], $_POST['message_type'])) {
         $content = trim($_POST['new_message']);
@@ -69,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch all messages
 $stmt = $pdo->prepare("SELECT m.*, u.name AS sender_name
                        FROM messages m
                        LEFT JOIN users u ON m.user_id = u.id
@@ -80,7 +77,6 @@ $stmt = $pdo->prepare("SELECT m.*, u.name AS sender_name
 $stmt->execute(['id' => $supervisor_id]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Group messages
 $parent_messages = [];
 $replies_map = [];
 foreach ($messages as $msg) {
@@ -95,44 +91,141 @@ foreach ($messages as $msg) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Supervisor Messages</title>
-<style>
-  * { box-sizing: border-box; font-family: Arial, sans-serif; }
-  body { margin: 0; display: flex; height: 100vh; }
-  .sidebar {
-    width: 140px; background-color: #f0f0f0; border-right: 1px solid #333;
-    padding-top: 30px; display: flex; flex-direction: column; align-items: center;
-  }
-  .sidebar button {
-    width: 100px; margin: 10px 0; padding: 5px;
-    border: 1px solid #444; background-color: #ddd; cursor: pointer;
-  }
-  .sidebar button.active { background-color: #999; color: white; }
-  .sidebar img.logo { display: block; max-height: 65px; margin-bottom: 10px; }
-  .logout-btn { margin-top: auto; margin-bottom: 20px; }
-  .main-content { flex-grow: 1; padding: 20px; overflow-y: auto; }
-  h2 {
-    text-align: center; background-color: #e0e0e0; padding: 10px;
-    font-size: 20px; border: 1px solid #aaa; width: fit-content;
-    margin: 0 auto 20px auto;
-  }
-  .add-form { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
-  .add-form textarea { width: 300px; height: 60px; padding: 6px; }
-  .add-form select, .add-form button { padding: 6px; }
-  .card {
-    border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 15px;
-  }
-  .message-card { background: #e8f0ff; }
-  .notification-card { background: #fffbe5; }
-  .reply-card {
-    background: #f0f0ff; margin-left: 30px; border-left: 4px solid #007bff;
-    margin-top: 10px;
-  }
-  .card small { display: block; color: #666; font-size: 12px; margin-top: 5px; }
-  .reply-form textarea { width: 100%; height: 50px; margin-top: 8px; resize: none; }
-  .reply-form button { margin-top: 5px; padding: 5px 10px; background-color: #444; color: white; border: none; }
-</style>
+  <meta charset="UTF-8">
+  <title>Supervisor Messages</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { margin: 0; display: flex; height: 100vh; }
+
+    .sidebar {
+      width: 160px;
+      background-color: #95cb48;
+      padding-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .sidebar img.logo {
+      display: block;
+      max-height: 65px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      background-color: transparent;
+      color: white;
+      border: none;
+      text-align: left;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar button:hover {
+      background-color: #7eb537;
+    }
+
+    .sidebar button.active {
+      background-color: red;
+      color: white;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      margin-left: 160px;
+      background-color: #f9f9f9;
+      overflow-y: auto;
+    }
+
+    h2 {
+      text-align: center;
+      background-color: #95cb48;
+      color: white;
+      padding: 10px;
+      font-size: 20px;
+      border: none;
+      width: fit-content;
+      margin: 0 auto 20px auto;
+    }
+
+    .add-form {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .add-form textarea {
+      width: 300px;
+      height: 60px;
+      padding: 6px;
+    }
+
+    .add-form select,
+    .add-form button {
+      padding: 6px;
+    }
+
+    .add-form button {
+      background-color: #95cb48;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .add-form button:hover {
+      background-color: #7eb537;
+    }
+
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .message-card { background: #e8f0ff; }
+    .notification-card { background: #fffbe5; }
+
+    .reply-card {
+      background: #f0f0ff;
+      margin-left: 30px;
+      border-left: 4px solid #007bff;
+      margin-top: 10px;
+    }
+
+    .card small {
+      display: block;
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .reply-form textarea {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      resize: none;
+    }
+
+    .reply-form button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      background-color: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 <div class="sidebar">

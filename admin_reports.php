@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Fetch all interns
+// Fetch interns
 $interns_stmt = $pdo->query("
     SELECT 
         u.id, u.name, u.email, u.created_at, u.supervisor_id, 
@@ -24,7 +24,7 @@ $interns_stmt = $pdo->query("
 ");
 $interns = $interns_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch all supervisors
+// Fetch supervisors
 $supervisors_stmt = $pdo->query("
     SELECT 
         s.id, s.name, s.email, s.created_at,
@@ -51,83 +51,133 @@ foreach ($interns_by_supervisor_stmt as $row) {
   <meta charset="UTF-8">
   <title>Admin Reports</title>
   <style>
-    body { margin: 0; display: flex; font-family: Arial, sans-serif; }
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+
     .sidebar {
       width: 140px;
-      background-color: #f0f0f0;
-      border-right: 1px solid #333;
+      height: 100vh;
+      background-color: #95cb48;
+      position: fixed;
+      top: 0;
+      left: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-top: 20px;
+      color: white;
+      border-right: 1px solid #7ca63c;
     }
+
     .sidebar .logo {
       width: 80px;
-      margin-bottom: 20px;
+      height: auto;
+      margin-bottom: 25px;
     }
+
     .sidebar button {
       width: 100px;
-      margin: 10px 0;
-      padding: 6px;
-      border: 1px solid #444;
-      background-color: #ddd;
+      margin: 8px 0;
+      padding: 7px 10px;
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
+      text-align: center;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
     }
+
+    .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
     .sidebar button.active {
-      background-color: #999;
+      background-color: #dc1511;
       color: white;
     }
+
     .main {
       flex-grow: 1;
+      margin-left: 140px;
       padding: 20px;
       overflow-x: auto;
+      background-color: #f6fdf3;
     }
-    h2 { margin-top: 0; }
+
+    h2 {
+      margin-top: 0;
+      color: #4a7c12;
+    }
+
     .section-title {
       font-size: 20px;
       margin: 30px 0 10px;
+      color: #4a7c12;
     }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      table-layout: auto;
-      font-size: 14px;
-    }
-    th, td {
-      border: 1px solid #999;
-      padding: 4px 8px;
-      white-space: nowrap;
-    }
-    th {
-      background-color: #e0e0e0;
-    }
-    .download-button {
-      margin-top: 10px;
-      padding: 6px 12px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .download-button:hover {
-      background-color: #218838;
-    }
+
     .search-box {
       margin: 10px 0 20px;
     }
+
     .search-box input {
       padding: 6px;
       width: 300px;
       font-size: 14px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #b2d59d;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #d9eacb;
+      color: #2d5c08;
+    }
+
+    .download-button {
+      margin-top: 10px;
+      padding: 8px 14px;
+      background-color: #6c9f2e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+
+    .download-button:hover {
+      background-color: #558321;
     }
   </style>
 </head>
 <body>
 
+<!-- Sidebar -->
 <div class="sidebar">
   <img src="logo.jpeg" alt="Logo" class="logo">
   <button onclick="location.href='admin_dashboard.php'">Dashboard</button>
-  <button onclick="location.href='interns_dashboard.php'">Internship field</button>
+  <button onclick="location.href='interns_dashboard.php'">Internship Field</button>
   <button onclick="location.href='admin_dashboard.php'">Applications</button>
   <button onclick="location.href='interns_dashboard.php'">Interns</button>
   <button onclick="location.href='supervisor_dashboard.php'">Supervisors</button>
@@ -136,13 +186,16 @@ foreach ($interns_by_supervisor_stmt as $row) {
   <button onclick="location.href='logout.php'">Log out</button>
 </div>
 
+<!-- Main content -->
 <div class="main">
   <h2>Admin Reports</h2>
 
+  <!-- Search -->
   <div class="search-box">
     <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search by intern email...">
   </div>
 
+  <!-- Intern Report Table -->
   <div class="section-title">Intern Task Summary</div>
   <table id="internTable">
     <thead>
@@ -176,6 +229,7 @@ foreach ($interns_by_supervisor_stmt as $row) {
     </tbody>
   </table>
 
+  <!-- Supervisor Report Table -->
   <div class="section-title">Supervisor Assignment Summary</div>
   <table>
     <thead>
@@ -197,11 +251,13 @@ foreach ($interns_by_supervisor_stmt as $row) {
     </tbody>
   </table>
 
+  <!-- Download Button -->
   <form method="get" action="admin_report_download.php" target="_blank">
     <button type="submit" class="download-button">Download Report as PDF</button>
   </form>
 </div>
 
+<!-- Search Script -->
 <script>
   function filterTable() {
     const input = document.getElementById("searchInput");

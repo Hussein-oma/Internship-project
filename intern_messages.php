@@ -20,11 +20,11 @@ $interns_stmt = $pdo->prepare("SELECT id, name FROM users WHERE role = 'intern' 
 $interns_stmt->execute([$intern_id]);
 $fellow_interns = $interns_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle message or notification submission
+// Handle message/notification submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['new_message'], $_POST['recipient_id'], $_POST['message_type'])) {
         $content = trim($_POST['new_message']);
-        $recipient_ids = $_POST['recipient_id']; // array
+        $recipient_ids = $_POST['recipient_id'];
         $type = $_POST['message_type'] === 'notification' ? 'notification' : 'message';
         $group_id = uniqid('msg_', true);
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch all messages
+// Fetch messages
 $stmt = $pdo->prepare("SELECT m.*, u.name AS sender_name FROM messages m
                        LEFT JOIN users u ON m.user_id = u.id
                        WHERE (m.recipient_id = :id AND m.recipient_role = 'intern')
@@ -105,40 +105,141 @@ foreach ($messages as $msg) {
   <style>
     * { box-sizing: border-box; font-family: Arial, sans-serif; }
     body { margin: 0; display: flex; height: 100vh; }
+
     .sidebar {
-      width: 140px; background-color: #f0f0f0; border-right: 1px solid #333;
-      padding-top: 30px; display: flex; flex-direction: column; align-items: center;
+      width: 160px;
+      background-color: #95cb48;
+      padding-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: 0;
     }
+
+    .sidebar img.logo {
+      display: block;
+      max-height: 65px;
+      margin-bottom: 30px;
+    }
+
     .sidebar button {
-      width: 100px; margin: 10px 0; padding: 5px;
-      border: 1px solid #444; background-color: #ddd; cursor: pointer;
+      width: 100%;
+      padding: 12px 10px;
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-    .sidebar button.active { background-color: #999; color: white; }
-    .sidebar img.logo { display: block; max-height: 65px; margin-bottom: 10px; }
-    .main-content { flex-grow: 1; padding: 20px; overflow-y: auto; }
+
+    .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar button.active {
+      background-color: red;
+    }
+
+    .main-content {
+      margin-left: 160px;
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
     h2 {
-      text-align: center; background-color: #e0e0e0; padding: 10px;
-      font-size: 20px; border: 1px solid #aaa; width: fit-content;
-      margin: 0 auto 20px auto;
+      text-align: center;
+      background-color: #95cb48;
+      color: white;
+      padding: 12px;
+      font-size: 22px;
+      border-radius: 6px;
+      margin-bottom: 30px;
     }
-    .send-form { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
-    .send-form textarea { width: 300px; height: 60px; padding: 6px; }
-    .send-form select, .send-form button { padding: 6px; }
+
+    .send-form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      background-color: #e8ffe8;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #c0e5c0;
+    }
+
+    .send-form textarea {
+      width: 300px;
+      height: 60px;
+      padding: 8px;
+    }
+
+    .send-form select, .send-form button {
+      padding: 8px;
+    }
+
+    .send-form button {
+      background-color: #95cb48;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
     .card {
-      border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
     }
-    .message-card { background: #e8f0ff; }
-    .notification-card { background: #fffbe5; }
+
+    .message-card {
+      background: #e8f0ff;
+    }
+
+    .notification-card {
+      background: #fffbe5;
+    }
+
     .reply-card {
-      background: #f0f0ff; margin-left: 30px; border-left: 4px solid #007bff;
+      background: #f0f0ff;
+      margin-left: 30px;
+      border-left: 4px solid #007bff;
       margin-top: 10px;
     }
-    .card small { display: block; color: #666; font-size: 12px; margin-top: 5px; }
-    .reply-form textarea { width: 100%; height: 50px; margin-top: 8px; resize: none; }
-    .reply-form button { margin-top: 5px; padding: 5px 10px; background-color: #444; color: white; border: none; }
+
+    .card small {
+      display: block;
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .reply-form textarea {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      resize: none;
+      padding: 6px;
+    }
+
+    .reply-form button {
+      margin-top: 5px;
+      padding: 6px 14px;
+      background-color: #95cb48;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
 <div class="sidebar">
   <img src="logo.jpeg" alt="Logo" class="logo" />
   <button onclick="location.href='intern_dashboard.php'">Dashboard</button>
@@ -220,5 +321,6 @@ foreach ($messages as $msg) {
     </div>
   <?php endforeach; ?>
 </div>
+
 </body>
 </html>

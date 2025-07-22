@@ -51,23 +51,7 @@ $supervisors = $conn->query("SELECT id, name FROM users WHERE role = 'supervisor
 <head>
     <meta charset="UTF-8">
     <title>Interns Dashboard</title>
-    <link rel="stylesheet" href="interns_dashboard.css">
-    <style>
-        .badge {
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 7px;
-            font-size: 12px;
-            position: absolute;
-            right: 10px;
-            top: 8px;
-            z-index: 999;
-        }
-        .sidebar button {
-            position: relative;
-        }
-    </style>
+    <link rel="stylesheet" href="interns_dashboard1.css">
 </head>
 <body>
 <div class="sidebar">
@@ -88,7 +72,7 @@ $supervisors = $conn->query("SELECT id, name FROM users WHERE role = 'supervisor
 </div>
 
 <div class="content">
-    <h2>Out-west Internship Admin Dashboard</h2>
+    <h2>Internship Admin Dashboard</h2>
 
     <form method="GET" class="search-form">
         <label>Search by Email</label>
