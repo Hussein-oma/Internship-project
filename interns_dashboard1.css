@@ -135,3 +135,16 @@ select {
   top: 8px;
   z-index: 999;
 }
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+    background: #ffeeee;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+

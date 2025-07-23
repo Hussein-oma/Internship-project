@@ -12,7 +12,7 @@ body {
 /* === Sidebar === */
 .sidebar {
   width: 140px;
-  background-color: #95cb48; /* Updated green */
+  background-color: #95cb48;
   border-right: 1px solid #333;
   padding-top: 30px;
   display: flex;
@@ -60,7 +60,7 @@ body {
 /* === Title/Header === */
 h2 {
   text-align: center;
-  background-color: #95cb48; /* Updated to match sidebar */
+  background-color: #95cb48;
   color: white;
   padding: 10px;
   margin-bottom: 20px;
@@ -72,7 +72,7 @@ h2 {
   border-radius: 5px;
 }
 
-/* === Add Form / Search === */
+/* === Add Form === */
 .add-form {
   display: flex;
   gap: 10px;
@@ -89,7 +89,7 @@ h2 {
 .add-form button {
   padding: 5px 10px;
   font-size: 14px;
-  background-color: #95cb48; /* Match sidebar */
+  background-color: #95cb48;
   border: none;
   color: white;
   cursor: pointer;
@@ -97,10 +97,10 @@ h2 {
 }
 
 .add-form button:hover {
-  background-color: #7eaa3c; /* Slightly darker green on hover */
+  background-color: #7eaa3c;
 }
 
-/* === Supervisor Table === */
+/* === Table === */
 .supervisor-table {
   width: 90%;
   margin: 0 auto;
@@ -121,4 +121,35 @@ h2 {
   cursor: pointer;
   background-color: #ddd;
   border: 1px solid #333;
+}
+
+/* === Badge === */
+.badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 12px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  z-index: 999;
+}
+.sidebar button {
+  position: relative;
+}
+
+/* === Status Badge === */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #4CAF50; /* Green for active */
+  font-size: 12px;
+  display: inline-block;
+}
+
+.status-inactive {
+  background-color: #f44336; /* Red for inactive */
 }

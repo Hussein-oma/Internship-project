@@ -18,21 +18,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
 
+        if (password_verify($password, $user['password'])) {
+            $status = $user['status'] ?? 'inactive';
+
+            // INTERN LOGIN CHECK
             if ($user['role'] === 'intern') {
-                header("Location: weekly_report.php");
-            } elseif ($user['role'] === 'supervisor') {
-                header("Location: view_intern_report.php");
-            } elseif ($user['role'] === 'admin') {
-                header("Location: internship_field.php");
-            } else {
-                header("Location: dashboard.php");
+                $intern_email = $conn->real_escape_string($user['email']);
+                $app_query = $conn->query("SELECT duration FROM internship_applications WHERE email = '$intern_email' ORDER BY id DESC LIMIT 1");
+
+                $duration = 0;
+                if ($app_row = $app_query->fetch_assoc()) {
+                    $duration = (int)$app_row['duration'];
+                }
+
+                $created_at = strtotime($user['created_at']);
+                $end_date = strtotime("+{$duration} months", $created_at);
+                $today = time();
+                $is_active = $duration > 0 && $end_date >= $today;
+
+                if ($status !== 'active') {
+                    $message = "Access denied. Your account is not active. Contact Admin.";
+                } elseif ($duration == 0) {
+                    $message = "Access denied. No internship application found.";
+                } elseif (!$is_active) {
+                    $message = "Access denied. Your internship period has ended.";
+                } else {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    header("Location: weekly_report.php");
+                    exit();
+                }
             }
-            exit();
+
+            // SUPERVISOR LOGIN CHECK
+            elseif ($user['role'] === 'supervisor') {
+                if ($status !== 'active') {
+                    $message = "Access denied. Your supervisor account is not active.";
+                } else {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    header("Location: view_intern_report.php");
+                    exit();
+                }
+            }
+
+            // ADMIN LOGIN
+            elseif ($user['role'] === 'admin') {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
+                header("Location: internship_field.php");
+                exit();
+            }
+
+            // Other roles (optional)
+            else {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
+                header("Location: dashboard.php");
+                exit();
+            }
+
         } else {
             $message = "Invalid password.";
         }
@@ -43,12 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <link rel="stylesheet" href="login1.css">
+  <link rel="stylesheet" href="login.css">
   <style>
     .forgot-password {
       display: block;
@@ -61,6 +112,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     .forgot-password a:hover {
       text-decoration: underline;
+    }
+
+    .message {
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    .message.error {
+      background-color: #ffe6e6;
+      border: 1px solid #dc1511;
+      color: #dc1511;
+    }
+
+    .message.success {
+      background-color: #e6f4ea;
+      border: 1px solid #28a745;
+      color: #28a745;
     }
   </style>
 </head>

@@ -35,22 +35,6 @@ foreach ($supervisors as $sup) {
   <meta charset="UTF-8">
   <title>Supervisor Dashboard</title>
   <link rel="stylesheet" href="supervisor1.css">
-  <style>
-    .badge {
-      background-color: red;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 7px;
-      font-size: 12px;
-      position: absolute;
-      right: 10px;
-      top: 8px;
-      z-index: 999;
-    }
-    .sidebar button {
-      position: relative;
-    }
-  </style>
 </head>
 <body>
   <div class="sidebar">
@@ -71,7 +55,7 @@ foreach ($supervisors as $sup) {
   </div>
 
   <div class="main-content">
-    <h2>Out-west Internship Admin Dashboard</h2>
+    <h2>Internship Admin Dashboard</h2>
 
     <!-- Add Supervisor Form -->
     <form class="add-form" action="add_supervisor.php" method="POST">
@@ -90,6 +74,7 @@ foreach ($supervisors as $sup) {
         <th>Date Created</th>
         <th>Password</th>
         <th>Check interns assigned to</th>
+        <th>Account Status</th>
         <th>Action</th>
       </tr>
       <?php foreach ($supervisors as $index => $row): ?>
@@ -115,16 +100,14 @@ foreach ($supervisors as $sup) {
           <?php endif; ?>
         </td>
         <td>
-          <!-- Reset Password -->
-          <form method="POST" action="reset_supervisor_password.php" style="display:inline;">
-            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-            <button type="submit">Reset Password</button>
-          </form>
-
-          <!-- Edit -->
+          <?php
+            $status = strtolower(trim($row['account_status']));
+            $statusClass = $status === 'active' ? 'status-badge' : 'status-badge status-inactive';
+            echo "<span class=\"$statusClass\">" . ucfirst($status) . "</span>";
+          ?>
+        </td>
+        <td>
           <a href="edit_supervisor.php?id=<?= $row['id'] ?>"><button>Edit</button></a>
-
-          <!-- Delete with Confirmation -->
           <form method="POST" action="delete_supervisor.php" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this supervisor? This action cannot be undone.');">
             <input type="hidden" name="id" value="<?= $row['id'] ?>">
             <button type="submit">Delete</button>
