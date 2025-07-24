@@ -147,4 +147,8 @@ select {
     padding: 3px 8px;
     border-radius: 6px;
 }
+.status-completed {
+    color: green;
+    font-weight: bold;
+}
 

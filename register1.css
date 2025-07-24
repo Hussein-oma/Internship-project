@@ -20,21 +20,21 @@ body {
   margin: 80px auto;
   padding: 30px;
   background-color: white;
-  border: 1px solid #009fd4; /* Blue border */
+  border: 1px solid #009fd4;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #009fd4; /* Blue heading */
+  color: #009fd4;
 }
 
 label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
-  color: #009fd4; /* Blue labels */
+  color: #009fd4;
 }
 
 input[type="text"],
@@ -49,7 +49,7 @@ input[type="password"] {
 
 button[type="submit"] {
   margin-top: 15px;
-  background-color: #009fd4; /* Blue submit button */
+  background-color: #009fd4;
   color: white;
   padding: 8px 16px;
   cursor: pointer;
@@ -64,7 +64,7 @@ button[type="submit"]:hover {
 .login-button {
   display: inline-block;
   margin-left: 10px;
-  background-color: #95cb48; /* Green background */
+  background-color: #95cb48;
   padding: 4px 12px;
   text-decoration: none;
   color: white;
@@ -85,5 +85,5 @@ button[type="submit"]:hover {
 
 .error {
   background-color: #ffcdd2;
-  color: #dc1511; /* Gear red */
+  color: #dc1511;
 }

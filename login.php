@@ -20,69 +20,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = $result->fetch_assoc();
 
         if (password_verify($password, $user['password'])) {
-            $status = $user['status'] ?? 'inactive';
+            $account_status = $user['account_status'] ?? 'inactive';
 
-            // INTERN LOGIN CHECK
-            if ($user['role'] === 'intern') {
-                $intern_email = $conn->real_escape_string($user['email']);
-                $app_query = $conn->query("SELECT duration FROM internship_applications WHERE email = '$intern_email' ORDER BY id DESC LIMIT 1");
+            // DENY ACCESS if account is not active
+            if ($account_status !== 'active') {
+                $message = "Access denied. Your account is not active. Contact Admin.";
+            } else {
+                // INTERN LOGIN CHECK with session end validation
+                if ($user['role'] === 'intern') {
+                    $intern_email = $conn->real_escape_string($user['email']);
+                    $app_query = $conn->query("SELECT duration FROM internship_applications WHERE email = '$intern_email' ORDER BY id DESC LIMIT 1");
 
-                $duration = 0;
-                if ($app_row = $app_query->fetch_assoc()) {
-                    $duration = (int)$app_row['duration'];
-                }
+                    $duration = 0;
+                    if ($app_row = $app_query->fetch_assoc()) {
+                        $duration = (int)$app_row['duration'];
+                    }
 
-                $created_at = strtotime($user['created_at']);
-                $end_date = strtotime("+{$duration} months", $created_at);
-                $today = time();
-                $is_active = $duration > 0 && $end_date >= $today;
+                    $created_at = strtotime($user['created_at']);
+                    $end_date = strtotime("+{$duration} months", $created_at);
+                    $today = time();
+                    $is_active = $duration > 0 && $end_date >= $today;
 
-                if ($status !== 'active') {
-                    $message = "Access denied. Your account is not active. Contact Admin.";
-                } elseif ($duration == 0) {
-                    $message = "Access denied. No internship application found.";
-                } elseif (!$is_active) {
-                    $message = "Access denied. Your internship period has ended.";
-                } else {
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['email'] = $user['email'];
-                    $_SESSION['role'] = $user['role'];
-                    header("Location: weekly_report.php");
-                    exit();
-                }
-            }
+                    if (!$is_active) {
+                        $message = "Access denied. Your internship period has ended.";
+                    } else {
+                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['email'] = $user['email'];
+                        $_SESSION['role'] = $user['role'];
+                        header("Location: weekly_report.php");
+                        exit();
+                    }
 
-            // SUPERVISOR LOGIN CHECK
-            elseif ($user['role'] === 'supervisor') {
-                if ($status !== 'active') {
-                    $message = "Access denied. Your supervisor account is not active.";
-                } else {
+                } elseif ($user['role'] === 'supervisor') {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['email'] = $user['email'];
                     $_SESSION['role'] = $user['role'];
                     header("Location: view_intern_report.php");
                     exit();
+
+                } elseif ($user['role'] === 'admin') {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    header("Location: internship_field.php");
+                    exit();
+
+                } else {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    header("Location: dashboard.php");
+                    exit();
                 }
             }
-
-            // ADMIN LOGIN
-            elseif ($user['role'] === 'admin') {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['role'] = $user['role'];
-                header("Location: internship_field.php");
-                exit();
-            }
-
-            // Other roles (optional)
-            else {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['role'] = $user['role'];
-                header("Location: dashboard.php");
-                exit();
-            }
-
         } else {
             $message = "Invalid password.";
         }

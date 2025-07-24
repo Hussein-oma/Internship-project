@@ -209,7 +209,7 @@ foreach ($interns_by_supervisor_stmt as $row) {
         $created_at = $intern['created_at'];
         $duration = (int)$intern['duration'];
         $end_date = $duration > 0 ? date('Y-m-d', strtotime("+$duration months", strtotime($created_at))) : 'N/A';
-        $status = ($end_date !== 'N/A' && strtotime($end_date) >= time()) ? 'Ongoing' : (($end_date === 'N/A') ? 'N/A' : 'Ended');
+        $status = ($end_date !== 'N/A' && strtotime($end_date) >= time()) ? 'Ongoing' : (($end_date === 'N/A') ? 'N/A' : 'Completed');
       ?>
         <tr>
           <td><?= $index + 1 ?></td>

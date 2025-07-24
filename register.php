@@ -19,24 +19,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo = new PDO($dsn, $user, $pass, $options);
 
-        $name = trim($_POST['username']);  // Captures the name input
+        $name = trim($_POST['username']);
         $email = trim($_POST['email']);
         $password = $_POST['password'];
         $confirm = $_POST['confirm_password'];
 
-        if ($password !== $confirm) {
-            $errorMessage = "Passwords do not match.";
+        // Check if email is approved in internship_applications
+        $checkStmt = $pdo->prepare("SELECT * FROM internship_applications WHERE email = ? AND status = 'approved'");
+        $checkStmt->execute([$email]);
+
+        if ($checkStmt->rowCount() === 0) {
+            $errorMessage = "Invalid or unapproved email.";
         } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // Check if account already exists
+            $existingUser = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+            $existingUser->execute([$email]);
 
-            // Use `name` to match your actual database column
-            $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'intern')");
-            $stmt->execute([$name, $email, $hashedPassword]);
+            if ($existingUser->rowCount() > 0) {
+                $errorMessage = "Account already exists.";
+            } elseif ($password !== $confirm) {
+                $errorMessage = "Passwords do not match.";
+            } else {
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            $successMessage = "Registration successful! Redirecting to login...";
-            header("refresh:2;url=login.php"); // Redirect after 2 seconds
+                $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'intern')");
+                $stmt->execute([$name, $email, $hashedPassword]);
+
+                $successMessage = "Registration successful! Redirecting to login...";
+                header("refresh:2;url=login.php");
+            }
         }
-
     } catch (PDOException $e) {
         $errorMessage = "Database error: " . $e->getMessage();
     }
@@ -72,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label>Password:</label>
       <input type="password" name="password" required>
 
-      <label>Confirm password:</label>
+      <label>Confirm Password:</label>
       <input type="password" name="confirm_password" required>
 
       <button type="submit">Register</button>
