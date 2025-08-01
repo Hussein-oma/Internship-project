@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Supervisor Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f6f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .filter {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filter label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .filter select {
+      padding: 6px 12px;
+      font-size: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .actions button {
+      padding: 6px 12px;
+      margin: 2px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .approve {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .decline {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .message {
+      text-align: center;
+      color: #555;
+      font-style: italic;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Supervisor Dashboard</h1>
+
+  <div class="filter">
+    <label for="status">Filter by Status:</label>
+    <select id="status" onchange="filterStatus()">
+      <option value="All">All</option>
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Declined">Declined</option>
+    </select>
+  </div>
+
+  <div id="application-table">
+    <!-- Table loaded here -->
+  </div>
+
+  <script>
+    function loadApplications(status = 'All') {
+      fetch('get_applications.php?status=' + encodeURIComponent(status))
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('application-table').innerHTML = html;
+        })
+        .catch(error => {
+          document.getElementById('application-table').innerHTML = '<p class="message">Error loading applications.</p>';
+          console.error(error);
+        });
+    }
+
+    function filterStatus() {
+      const status = document.getElementById('status').value;
+      loadApplications(status);
+    }
+
+    function updateStatus(id, newStatus) {
+      if (confirm(`Are you sure you want to mark this application as ${newStatus}?`)) {
+        fetch('update_status.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'id=' + encodeURIComponent(id) + '&status=' + encodeURIComponent(newStatus)
+        })
+        .then(response => response.text())
+        .then(msg => {
+          alert(msg);
+          filterStatus(); // Reload filtered data
+        })
+        .catch(err => {
+          alert("Failed to update status.");
+          console.error(err);
+        });
+      }
+    }
+
+    window.onload = () => loadApplications();
+  </script>
+
+</body>
+</html>

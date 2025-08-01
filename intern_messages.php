@@ -1,6 +1,7 @@
 <?php
-require_once 'config.php';
 session_start();
+require_once 'config.php';
+require_once 'email_notification.php';
 
 $intern_id = $_SESSION['user_id'] ?? null;
 $role = $_SESSION['role'] ?? '';
@@ -29,26 +30,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $group_id = uniqid('msg_', true);
 
         if (!empty($content)) {
+            // Get intern name for email notifications
+            $intern_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'intern'");
+            $intern_stmt->execute([$intern_id]);
+            $intern_name = $intern_stmt->fetchColumn() ?: 'Intern';
+            
             foreach ($recipient_ids as $recipient_id) {
                 if ($recipient_id === 'admin') {
                     $admin_stmt = $pdo->query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
                     $admin_id = $admin_stmt->fetchColumn();
                     if ($admin_id) {
                         $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_id, recipient_role, group_id)
-                                               VALUES (?, NOW(), ?, 'intern', ?, 'admin', ?)");
+                                               VALUES (?, NOW(), ?, 'intern', ?, ?, 'admin', ?)");
                         $stmt->execute([$content, $intern_id, $type, $admin_id, $group_id]);
+                        
+                        // Send email notification to admin
+                        sendEmailNotification($admin_id, 'admin', $content, $intern_name, $type);
                     }
                 } elseif ($recipient_id === 'supervisor') {
                     if ($supervisor) {
                         $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_id, recipient_role, group_id)
-                                               VALUES (?, NOW(), ?, 'intern', ?, 'supervisor', ?)");
+                                               VALUES (?, NOW(), ?, 'intern', ?, ?, 'supervisor', ?)");
                         $stmt->execute([$content, $intern_id, $type, $supervisor['id'], $group_id]);
+                        
+                        // Send email notification to supervisor
+                        sendEmailNotification($supervisor['id'], 'supervisor', $content, $intern_name, $type);
                     }
                 } elseif (strpos($recipient_id, 'intern_') === 0) {
                     $receiver_id = str_replace('intern_', '', $recipient_id);
                     $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_id, recipient_role, group_id)
-                                           VALUES (?, NOW(), ?, 'intern', ?, 'intern', ?)");
-                    $stmt->execute([$content, $intern_id, $receiver_id, $type, $group_id]);
+                                           VALUES (?, NOW(), ?, 'intern', ?, ?, 'intern', ?)");
+                    $stmt->execute([$content, $intern_id, $type, $receiver_id, $group_id]);
+                    
+                    // Send email notification to fellow intern
+                    sendEmailNotification($receiver_id, 'intern', $content, $intern_name, $type);
                 }
             }
         }
@@ -65,9 +80,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reply_to_message_id = $_POST['reply_to_message_id'];
 
         if (!empty($reply_text)) {
+            // Get intern name for email notifications
+            $intern_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'intern'");
+            $intern_stmt->execute([$intern_id]);
+            $intern_name = $intern_stmt->fetchColumn() ?: 'Intern';
+            
             $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_id, recipient_role, type, group_id, reply_to_message_id)
                                    VALUES (?, NOW(), ?, 'intern', ?, ?, 'reply', ?, ?)");
             $stmt->execute([$reply_text, $intern_id, $reply_to_id, $reply_to_role, $group_id, $reply_to_message_id]);
+            
+            // Send email notification for reply
+            sendEmailNotification($reply_to_id, $reply_to_role, $reply_text, $intern_name, 'reply');
         }
 
         header("Location: intern_messages.php");

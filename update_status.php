@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'email_notification.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $id = $_POST['id'] ?? null;
@@ -12,6 +13,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ':status' => $action,
                 ':id' => $id
             ]);
+            
+            // If application is approved, send registration link email
+            if ($action === 'approved') {
+                // Get applicant details
+                $applicantStmt = $pdo->prepare("SELECT fullname, email FROM internship_applications WHERE id = ?");
+                $applicantStmt->execute([$id]);
+                $applicant = $applicantStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($applicant) {
+                    // Generate a unique token
+                    $token = bin2hex(random_bytes(32));
+                    $expires = date('Y-m-d H:i:s', strtotime('+48 hours'));
+                    
+                    // Store token in database
+                    // This way we don't need to create a user until they register
+                    $tokenStmt = $pdo->prepare("INSERT INTO registration_tokens (token, expires_at, applicant_id, user_id) VALUES (?, ?, ?, NULL)");
+                    $tokenStmt->execute([$token, $expires, $id]);
+                    
+                    // Get the last inserted ID to use for the registration link
+                    $tokenId = $pdo->lastInsertId();
+                    
+                    // Send registration link email
+                    sendRegistrationLinkEmail($id, $applicant['email'], $applicant['fullname'], $token);
+                }
+            }
+            
             header("Location: admin_dashboard.php");
             exit;
         } catch (PDOException $e) {

@@ -1,6 +1,7 @@
 <?php
-require_once 'config.php';
 session_start();
+require_once 'config.php';
+require_once 'email_notification.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
@@ -23,16 +24,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($message) && !empty($recipients) && in_array($type, ['message', 'notification'])) {
             $group_id = uniqid('msg_', true);
 
+            // Get admin name for email notifications
+            $admin_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'admin'");
+            $admin_stmt->execute([$admin_id]);
+            $admin_name = $admin_stmt->fetchColumn() ?: 'Admin';
+            
             foreach ($recipients as $recipient) {
                 if (in_array($recipient, ['all_interns', 'all_supervisors', 'all_users'])) {
                     $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_group, type, group_id)
                                            VALUES (?, NOW(), ?, 'admin', ?, ?, ?)");
                     $stmt->execute([$message, $admin_id, $recipient, $type, $group_id]);
+                    
+                    // Send group email notification if checkbox is checked
+                    if (isset($_POST['send_email'])) {
+                        sendGroupEmailNotification($recipient, $message, $admin_name, $type);
+                    }
                 } else {
                     list($id, $role) = explode('_', $recipient);
                     $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_id, recipient_role, type, group_id)
                                            VALUES (?, NOW(), ?, 'admin', ?, ?, ?, ?)");
                     $stmt->execute([$message, $admin_id, $id, $role, $type, $group_id]);
+                    
+                    // Send individual email notification if checkbox is checked
+                    if (isset($_POST['send_email'])) {
+                        sendEmailNotification($id, $role, $message, $admin_name, $type);
+                    }
                 }
             }
         }
@@ -45,6 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($reply_text)) {
             $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_id, recipient_role, type, group_id, reply_to_message_id)
                                    VALUES (?, NOW(), ?, 'admin', ?, ?, 'reply', ?, ?)");
+            // Get admin name for email notifications
+            $admin_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'admin'");
+            $admin_stmt->execute([$admin_id]);
+            $admin_name = $admin_stmt->fetchColumn() ?: 'Admin';
+            
             $stmt->execute([
                 $reply_text,
                 $admin_id,
@@ -53,6 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_POST['group_id'],
                 $_POST['reply_to_message_id']
             ]);
+        
+            // Send email notification for reply if checkbox is checked
+            if (isset($_POST['send_email'])) {
+                sendEmailNotification($_POST['reply_to_id'], $_POST['reply_to_role'], $reply_text, $admin_name, 'reply');
+            }
         }
         header("Location: admin_messages.php");
         exit();
@@ -262,6 +288,11 @@ foreach ($messages as $msg) {
       <option value="message">Message</option>
       <option value="notification">Notification</option>
     </select>
+    
+    <div style="display: flex; align-items: center; margin: 5px 0;">
+      <input type="checkbox" id="send_email" name="send_email" value="1" checked>
+      <label for="send_email" style="margin-left: 5px;">Send via email</label>
+    </div>
 
     <button type="submit">Send</button>
   </form>
@@ -296,6 +327,10 @@ foreach ($messages as $msg) {
           <input type="hidden" name="reply_to_role" value="<?= $msg['user_role'] ?>">
           <input type="hidden" name="group_id" value="<?= $msg['group_id'] ?>">
           <input type="hidden" name="reply_to_message_id" value="<?= $msg['id'] ?>">
+          <div style="display: flex; align-items: center; margin: 5px 0;">
+            <input type="checkbox" id="send_email_reply_<?= $msg['id'] ?>" name="send_email" value="1" checked>
+            <label for="send_email_reply_<?= $msg['id'] ?>" style="margin-left: 5px;">Send via email</label>
+          </div>
           <button type="submit">Reply</button>
         </form>
       <?php endif; ?>

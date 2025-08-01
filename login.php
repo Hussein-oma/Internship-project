@@ -88,8 +88,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Internship Portal</title>
   <link rel="stylesheet" href="login.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#009fd4">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
   <style>
     .forgot-password {
       display: block;
@@ -123,6 +127,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       border: 1px solid #28a745;
       color: #28a745;
     }
+    
+    /* Add install prompt styles */
+    #installPrompt {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #009fd4;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    
+    #installButton {
+      background-color: white;
+      color: #009fd4;
+      border: none;
+      padding: 5px 10px;
+      margin-left: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -142,15 +171,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input type="password" name="password" required>
 
       <div class="forgot-password">
-        <a href="reset_password.php">Forgot Password?</a>
+        <a href="reset.html">Forgot Password?</a>
       </div>
 
       <button type="submit">Login</button>
     </form>
 
-    <p>If you don’t have an account already,
+    <p>If you don't have an account already,
       <a href="register.php" class="register-link">Register</a>
     </p>
   </div>
+  
+  <!-- Install prompt for PWA -->
+  <div id="installPrompt">
+    Install this app on your device
+    <button id="installButton">Install</button>
+  </div>
+  
+  <script>
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(error => {
+            console.log('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+    
+    // Handle PWA installation
+    let deferredPrompt;
+    const installPrompt = document.getElementById('installPrompt');
+    const installButton = document.getElementById('installButton');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      // Show the install prompt
+      installPrompt.style.display = 'block';
+    });
+    
+    installButton.addEventListener('click', () => {
+      // Hide the app provided install promotion
+      installPrompt.style.display = 'none';
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    });
+  </script>
 </body>
 </html>

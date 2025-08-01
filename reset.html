@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Password Reset</title>
+  <link rel="stylesheet" href="reset.css" />
+  <style>
+    .container {
+      display: block;
+    }
+    .content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <!-- Update: form now posts to request_reset.php -->
+      <form class="form" action="request_reset.php" method="POST">
+        <h2>Password Resetting</h2>
+        <label>Enter your registered email:</label>
+        <input type="email" name="email" placeholder="yourname@example.com" required />
+        <button type="submit">Send reset link</button>
+        <p>The link will be sent to your email</p>
+      </form>
+    </div>
+  </div>
+
+  <script src="reset.js"></script>
+</body>
+</html>

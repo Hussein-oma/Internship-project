@@ -16,7 +16,8 @@ body {
 }
 
 .login-box {
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
   margin: 80px auto;
   padding: 30px;
   background-color: white;
@@ -44,30 +45,58 @@ input[type="password"] {
   margin-top: 5px;
   background-color: #e0e0e0;
   border: 2px solid #95cb48; /* Green border */
+  box-sizing: border-box;
 }
 
 button[type="submit"] {
   margin-top: 15px;
-  background-color: #009fd4; /* Blue */
+  width: 100%;
+  padding: 10px;
+  background-color: #009fd4; /* Blue button */
   color: white;
-  padding: 8px 16px;
-  cursor: pointer;
   border: none;
-  transition: background-color 0.3s;
+  cursor: pointer;
 }
 
 button[type="submit"]:hover {
-  background-color: #007bb0;
+  background-color: #0080a8; /* Darker blue on hover */
+}
+
+p {
+  margin-top: 20px;
+  text-align: center;
 }
 
 .register-link {
-  display: inline-block;
-  margin-left: 10px;
-  background-color: #95cb48; /* Green */
-  color: white;
-  padding: 4px 12px;
+  color: #009fd4;
   text-decoration: none;
-  border-radius: 3px;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .login-box {
+    margin: 40px auto;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    margin: 20px auto;
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  button[type="submit"] {
+    padding: 12px;
+  }
 }
 
 .message {

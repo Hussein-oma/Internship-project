@@ -1,6 +1,7 @@
 <?php
-require_once 'config.php';
 session_start();
+require_once 'config.php';
+require_once 'email_notification.php';
 
 $supervisor_id = $_SESSION['user_id'] ?? null;
 $role = $_SESSION['role'] ?? '';
@@ -22,14 +23,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $group_id = uniqid('msg_', true);
 
         if (!empty($content)) {
+            // Get supervisor name for email notifications
+            $sup_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'supervisor'");
+            $sup_stmt->execute([$supervisor_id]);
+            $supervisor_name = $sup_stmt->fetchColumn() ?: 'Supervisor';
+            
             if ($recipient_id === 'all_users') {
                 $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_group, group_id)
                                        VALUES (?, NOW(), ?, 'supervisor', ?, 'all_users', ?)");
                 $stmt->execute([$content, $supervisor_id, $type, $group_id]);
+                
+                // Send email notifications to all users
+                sendGroupEmailNotification('all_users', $content, $supervisor_name, $type);
             } elseif ($recipient_id === 'all_interns') {
                 $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_group, group_id)
                                        VALUES (?, NOW(), ?, 'supervisor', ?, 'all_interns', ?)");
                 $stmt->execute([$content, $supervisor_id, $type, $group_id]);
+                
+                // Send email notifications to all interns
+                sendGroupEmailNotification('all_interns', $content, $supervisor_name, $type);
             } elseif ($recipient_id === 'admin') {
                 $admin_stmt = $pdo->prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
                 $admin_stmt->execute();
@@ -38,12 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_id, recipient_role, group_id)
                                            VALUES (?, NOW(), ?, 'supervisor', ?, ?, 'admin', ?)");
                     $stmt->execute([$content, $supervisor_id, $type, $admin_id, $group_id]);
+                    
+                    // Send email notification to admin
+                    sendEmailNotification($admin_id, 'admin', $content, $supervisor_name, $type);
                 }
             } elseif (strpos($recipient_id, 'intern_') === 0) {
                 $intern_id = str_replace('intern_', '', $recipient_id);
                 $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, type, recipient_id, recipient_role, group_id)
                                        VALUES (?, NOW(), ?, 'supervisor', ?, ?, 'intern', ?)");
                 $stmt->execute([$content, $supervisor_id, $type, $intern_id, $group_id]);
+                
+                // Send email notification to intern
+                sendEmailNotification($intern_id, 'intern', $content, $supervisor_name, $type);
             }
         }
         header("Location: supervisor_messages.php");
@@ -58,9 +76,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reply_to_message_id = $_POST['reply_to_message_id'];
 
         if (!empty($reply_text)) {
+            // Get supervisor name for email notifications
+            $sup_stmt = $pdo->prepare("SELECT name FROM users WHERE id = ? AND role = 'supervisor'");
+            $sup_stmt->execute([$supervisor_id]);
+            $supervisor_name = $sup_stmt->fetchColumn() ?: 'Supervisor';
+            
             $stmt = $pdo->prepare("INSERT INTO messages (content, created_at, user_id, user_role, recipient_id, recipient_role, type, group_id, reply_to_message_id)
                                    VALUES (?, NOW(), ?, 'supervisor', ?, ?, 'reply', ?, ?)");
             $stmt->execute([$reply_text, $supervisor_id, $reply_to_id, $reply_to_role, $group_id, $reply_to_message_id]);
+            
+            // Send email notification for reply
+            sendEmailNotification($reply_to_id, $reply_to_role, $reply_text, $supervisor_name, 'reply');
         }
         header("Location: supervisor_messages.php");
         exit();
