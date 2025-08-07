@@ -44,9 +44,9 @@ try {
       <span class="deadline"><?= htmlspecialchars($appStatusText) ?></span>
 
       <?php if ($isAppOpen): ?>
-        <a href="http://localhost/out-west/application.html">Open Application Form</a>
+        <a href="http://localhost/out-west/application.html">Apply Now</a>
       <?php else: ?>
-        <a href="#" onclick="alert('🚫 Application is currently closed. Please check back later.'); return false;">Open Application Form</a>
+        <a href="#" onclick="alert('🚫 Application is currently closed. Please check back later.'); return false;">Apply Now</a>
       <?php endif; ?>
 
       <a href="http://localhost/Out-west/status.php">Check status of your application</a>

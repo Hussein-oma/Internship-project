@@ -14,14 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ':id' => $id
             ]);
             
-            // If application is approved, send registration link email
-            if ($action === 'approved') {
-                // Get applicant details
-                $applicantStmt = $pdo->prepare("SELECT fullname, email FROM internship_applications WHERE id = ?");
-                $applicantStmt->execute([$id]);
-                $applicant = $applicantStmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($applicant) {
+            // Get applicant details for both approved and declined cases
+            $applicantStmt = $pdo->prepare("SELECT fullname, email FROM internship_applications WHERE id = ?");
+            $applicantStmt->execute([$id]);
+            $applicant = $applicantStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($applicant) {
+                // If application is approved, send registration link email
+                if ($action === 'approved') {
                     // Generate a unique token
                     $token = bin2hex(random_bytes(32));
                     $expires = date('Y-m-d H:i:s', strtotime('+48 hours'));
@@ -36,6 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     
                     // Send registration link email
                     sendRegistrationLinkEmail($id, $applicant['email'], $applicant['fullname'], $token);
+                }
+                // If application is declined, send polite rejection email
+                else if ($action === 'declined') {
+                    // Send rejection email
+                    sendApplicationDeclinedEmail($applicant['email'], $applicant['fullname']);
                 }
             }
             

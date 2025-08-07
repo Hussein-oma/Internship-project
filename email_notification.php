@@ -193,4 +193,127 @@ function sendGroupEmailNotification($group, $message_content, $sender_name, $mes
     
     return $success_count;
 }
+
+/**
+ * Send application confirmation email to applicants
+ * 
+ * @param string $email The email of the applicant
+ * @param string $name The name of the applicant
+ * @return bool True if email sent successfully, false otherwise
+ */
+function sendApplicationConfirmationEmail($email, $name) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'omar.hussein2022@students.jkuat.ac.ke';
+        $mail->Password   = 'nrmv bqpz kmms pcia';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = 587;
+        $mail->SMTPDebug  = 0;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        
+        // Recipients
+        $mail->setFrom('omar.hussein2022@students.jkuat.ac.ke', 'Internship Portal');
+        $mail->addAddress($email, $name);
+        
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Internship Application Received';
+        
+        // Email body
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                <h2 style='color: #333;'>✅ Application Received</h2>
+                <div style='background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                    <p>Dear {$name},</p>
+                    <p>Thank you for submitting your internship application. We have received your application and it is currently under review.</p>
+                    <p>We will notify you of any updates regarding your application status.</p>
+                </div>
+                <p>You can check the status of your application using your email address at any time.</p>
+                <p><a href='http://localhost/internship-portal/status.php' style='display: inline-block; background-color: #4CAF50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;'>Check Application Status</a></p>
+                <p>If you have any questions, please feel free to contact us.</p>
+            </div>
+        ";
+        
+        $mail->AltBody = "Application Received\n\nDear {$name},\n\nThank you for submitting your internship application. We have received your application and it is currently under review.\n\nWe will notify you of any updates regarding your application status.\n\nYou can check the status of your application using your email address at any time at: http://localhost/internship-portal/status.php\n\nIf you have any questions, please feel free to contact us.";
+        
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        // Log error but don't expose to user
+        error_log("Application confirmation email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        return false;
+    }
+}
+
+/**
+ * Send application declined email to applicants
+ * 
+ * @param string $email The email of the applicant
+ * @param string $name The name of the applicant
+ * @return bool True if email sent successfully, false otherwise
+ */
+function sendApplicationDeclinedEmail($email, $name) {
+    $mail = new PHPMailer(true);
+    
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'omar.hussein2022@students.jkuat.ac.ke';
+        $mail->Password   = 'nrmv bqpz kmms pcia';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = 587;
+        $mail->SMTPDebug  = 0;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        
+        // Recipients
+        $mail->setFrom('omar.hussein2022@students.jkuat.ac.ke', 'Internship Portal');
+        $mail->addAddress($email, $name);
+        
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Internship Application Status Update';
+        
+        // Email body
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                <h2 style='color: #333;'>Application Status Update</h2>
+                <div style='background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0;'>
+                    <p>Dear {$name},</p>
+                    <p>Thank you for your interest in our internship program and for taking the time to apply.</p>
+                    <p>After careful consideration of your application, we regret to inform you that we are unable to offer you an internship position at this time.</p>
+                    <p>We appreciate your interest in our organization and encourage you to apply for future opportunities that match your skills and interests.</p>
+                </div>
+                <p>We wish you the best in your future endeavors.</p>
+            </div>
+        ";
+        
+        $mail->AltBody = "Application Status Update\n\nDear {$name},\n\nThank you for your interest in our internship program and for taking the time to apply.\n\nAfter careful consideration of your application, we regret to inform you that we are unable to offer you an internship position at this time.\n\nWe appreciate your interest in our organization and encourage you to apply for future opportunities that match your skills and interests.\n\nWe wish you the best in your future endeavors.";
+        
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        // Log error but don't expose to user
+        error_log("Application declined email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        return false;
+    }
+}
 ?>

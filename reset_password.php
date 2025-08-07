@@ -36,7 +36,7 @@ $conn->close();
     .form h2 { margin-bottom: 20px; text-align: center; }
     .form label { margin-top: 10px; display: block; }
     .form input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; }
-    .form button { width: 100%; padding: 10px; background: #666; color: #fff; border: none; cursor: pointer; }
+    .form button { width: 100%; padding: 10px; background: #4CAF50; color: #fff; border: none; cursor: pointer; }
     .error { color: red; display: none; }
   </style>
 </head>

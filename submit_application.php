@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'email_notification.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Sanitize inputs
@@ -99,8 +100,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':responsibilities' => $responsibilities,
             ':cv_file'          => $cv_file_path
         ]);
-
+        
+        // Send confirmation email
+        $emailSent = sendApplicationConfirmationEmail($email, $fullname);
+        
         echo "<p style='color: green; font-size: 18px;'>✅ Application submitted successfully!<br>Avail yourself for interview on 05/09/2025</p>";
+        
+        if ($emailSent) {
+            echo "<p style='color: green;'>A confirmation email has been sent to your email address.</p>";
+        } else {
+            echo "<p style='color: orange;'>Your application was submitted, but we couldn't send a confirmation email. Please check your email address.</p>";
+        }
     } catch (PDOException $e) {
         echo "<p style='color: red; font-size: 18px;'>❌ Error submitting application: " . htmlspecialchars($e->getMessage()) . "</p>";
     }
